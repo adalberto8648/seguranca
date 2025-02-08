@@ -1,9 +1,11 @@
 import random
 import string
+import hashlib
 
 def tamanho_senha():
     while True:
         try:
+            print("----------------------------------")
             tamanho = int(input("Digite a quantidade de números da senha: "))
             if tamanho < 0:
                 print("O tamanho da senha não pode ser negativo, ou digite 0 para sair.")
@@ -16,7 +18,7 @@ def tamanho_senha():
             print("O tamanho da senha não pode ser negativo, ou digite 0 para sair.")
 
 def escolha():
-    print("----------------------------------\n")
+    print("----------------------------------")
     print("Escolha o nível para geração da senha.\n")
     print("Nível 1 - Senha fraca (Letras)")
     print("Nível 2 - Senha média (Letras e Números)")
@@ -25,9 +27,9 @@ def escolha():
     while True:
         try:
             caracteres_disponiveis = []
-            escolha = int(input("\nDigite o nível escolhido: "))
-            if escolha <= 0:
-                print("Escolha entre as opçôes 1, 2 ou 3 par ao nível de senha:")
+            escolha = int(input("\nDigite o nível de dificultade da senha: "))
+            if escolha <= 0 or escolha > 3:
+                print("Escolha entre as opções 1, 2 ou 3 par ao nível de senha:")
                 continue
             elif escolha == 1:
                 caracteres_disponiveis = string.ascii_letters
@@ -37,12 +39,19 @@ def escolha():
                 caracteres_disponiveis = string.ascii_letters + string.digits + string.punctuation
             return caracteres_disponiveis
         except ValueError:
-            print("Escolha entre as opçôes 1, 2 ou 3 par ao nível de senha:")
+            print("Escolha entre as opções 1, 2 ou 3 par ao nível de senha:")
+
+def gerar_hash(senha_gerada):
+    sha256 = hashlib.sha256()
+    sha256.update(senha_gerada.encode('utf-8'))
+    return sha256.hexdigest()
 
 tamanho = tamanho_senha()
-caracteres_disponiveis = escolha()
+caracteres = escolha()
+senha_gerada = ''.join(random.choice(caracteres) for numero in range(tamanho))
+senha_hash = gerar_hash(senha_gerada)
 
-senha = ''.join(random.choice(caracteres_disponiveis) for _ in range(tamanho))
-
-print("Senha gerada:", senha)
-
+print("----------------------------------")
+print(f"Senha {senha_gerada} gerada com sucesso:")
+print(f"Hash SHA-256 da senha: {senha_hash}")
+print("----------------------------------\n")
