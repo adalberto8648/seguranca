@@ -50,14 +50,9 @@ print(f"Senha gerada: {senha_gerada}")
 
 
 
-def gerar_salt():
-    salt = os.urandom(16)
-    return salt
-salt = gerar_salt()
-
-senha_com_salt_hex = senha_gerada + salt.hex()
+salt = os.urandom(16)
 print(f"Salt gerado: {salt.hex()}")
-
+senha_com_salt_hex = senha_gerada + salt.hex()
 
 
 
@@ -66,8 +61,6 @@ def gerar_hash(senha_com_salt_hex):
     sha256.update(senha_com_salt_hex.encode('utf-8'))
     return sha256.hexdigest()
 
-senha_hash = gerar_hash(senha_com_salt_hex)
-print(f"Hash SHA-256 da senha: {senha_hash}")
+
+print(f"Hash SHA-256 da senha: {gerar_hash(senha_com_salt_hex)}")
 print("----------------------------------\n")
-
-
