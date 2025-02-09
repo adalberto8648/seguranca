@@ -4,6 +4,18 @@ import hashlib
 import os
 import re
 
+def nome_usuario():
+    while True:
+        print("----------------------------------")
+        nome = input("Digite aqui a seu nome: ").strip()      
+
+        if nome == "0":
+            print("VOCÊ NÃO DIGITOU A SENHA. SAINDO -->")
+            exit()
+        else:
+            return nome
+nome = nome_usuario()
+
 def senha_escolhida():
     while True:
         print("----------------------------------")
@@ -14,6 +26,7 @@ def senha_escolhida():
             exit()
         else:
             return senha_digitada
+senha_digitada = senha_escolhida()
 
 def validar_senha(senha_digitada):
     if len(senha_digitada) < 8:
@@ -33,14 +46,9 @@ def validar_senha(senha_digitada):
         return False
     return True
 
-senha_digitada = senha_escolhida()
-
-# Usando um loop até que a senha seja válida
 while not validar_senha(senha_digitada):
     print("Senha inválida. Tente novamente.")
-    senha_digitada = senha_escolhida()  # Pede novamente até ser válida
-
-    
+    senha_digitada = senha_escolhida()
 
 print("----------------------------------")
 print(f"Senha gerada: {senha_digitada}")
@@ -55,12 +63,18 @@ print(f"Salt gerado: {salt.hex()}")
 senhas_com_salt_hex = senha_digitada + senha_gerada + salt.hex()
 
 
-
-def gerar_hash(senha_com_salt_hex):
+def gerar_hash(senhas_com_salt_hex):
     sha256 = hashlib.sha256()
-    sha256.update(senha_com_salt_hex.encode('utf-8'))
+    sha256.update(senhas_com_salt_hex.encode('utf-8'))
     return sha256.hexdigest()
-
+hash_senha = gerar_hash(senhas_com_salt_hex)
 
 print(f"Hash SHA-256 da senha: {gerar_hash(senhas_com_salt_hex)}")
 print("----------------------------------\n")
+
+def salvar_senha(nome, salt, hash_senha):
+    with open("senhas.txt", "a") as arquivo:
+        arquivo.write(f"{nome}:{salt.hex()}:{hash_senha}\n")
+    print("Senha armazenada com sucesso!\n")
+
+salvar_senha(nome, salt, hash_senha)
