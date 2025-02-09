@@ -1,6 +1,7 @@
 import random
 import string
 import hashlib
+import os
 
 def tamanho_senha():
     while True:
@@ -15,7 +16,8 @@ def tamanho_senha():
             else:
                 return tamanho
         except ValueError:
-            print("O tamanho da senha não pode ser negativo, ou digite 0 para sair.")
+            print("O tamanho da senha não pode ter letras ou espaços, ou digite 0 para sair.")
+tamanho = tamanho_senha()
 
 def escolha():
     print("----------------------------------")
@@ -40,18 +42,32 @@ def escolha():
             return caracteres_disponiveis
         except ValueError:
             print("Escolha entre as opções 1, 2 ou 3 par ao nível de senha:")
+caracteres = escolha()
 
-def gerar_hash(senha_gerada):
+senha_gerada = ''.join(random.choice(caracteres) for numero in range(tamanho))
+print("----------------------------------")
+print(f"Senha gerada: {senha_gerada}")
+
+
+
+def gerar_salt():
+    salt = os.urandom(16)
+    return salt
+salt = gerar_salt()
+
+senha_com_salt_hex = senha_gerada + salt.hex()
+print(f"Salt gerado: {salt.hex()}")
+
+
+
+
+def gerar_hash(senha_com_salt_hex):
     sha256 = hashlib.sha256()
-    sha256.update(senha_gerada.encode('utf-8'))
+    sha256.update(senha_com_salt_hex.encode('utf-8'))
     return sha256.hexdigest()
 
-tamanho = tamanho_senha()
-caracteres = escolha()
-senha_gerada = ''.join(random.choice(caracteres) for numero in range(tamanho))
-senha_hash = gerar_hash(senha_gerada)
-
-print("----------------------------------")
-print(f"Senha {senha_gerada} gerada com sucesso:")
+senha_hash = gerar_hash(senha_com_salt_hex)
 print(f"Hash SHA-256 da senha: {senha_hash}")
 print("----------------------------------\n")
+
+
