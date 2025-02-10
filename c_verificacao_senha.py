@@ -73,8 +73,9 @@ print(f"Hash SHA-256 da senha: {gerar_hash(senhas_com_salt_hex)}")
 print("----------------------------------\n")
 
 def salvar_senha(nome, salt, hash_senha):
-    with open("senhas.txt", "a") as arquivo:
+    with open("senhas.txt", "a", newline="") as arquivo:
         arquivo.write(f"{nome}:{salt.hex()}:{hash_senha}\n")
     print("Senha armazenada com sucesso!\n")
 
 salvar_senha(nome, salt, hash_senha)
+
