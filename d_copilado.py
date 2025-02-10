@@ -62,25 +62,3 @@ def abrir_arquivo_r(nome_arquivo):
         conversor = csv.reader(arquivo)
         dados = list(conversor)
     return dados
-
-def menu_clientes():
-    while True:
-        print("\n----- Menu clientes -----")
-        print("1 - Cadastrar Clientes")
-        print("2 - Listar Clientes")
-        print("3 - Alterar Clientes")
-        print("4 - Menu PROJETO")
-        escolha = input("\nEscolha uma opção: ")
-        print("-" * 24 + "\n")
-        
-        if escolha == "1":
-            cadastrar_clientes()
-        elif escolha == "2":
-            listar_clientes()
-        elif escolha == "3":
-            alterar_cliente()
-        elif escolha == "4":
-            print("Acessando -> Menu PROJETO ...")
-            break
-        else:
-            print("\nOpção inválida. Tente novamente.")  
