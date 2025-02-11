@@ -4,7 +4,7 @@ import hashlib
 import os
 import re
 
-def acessar_projeto():
+def acessar_menu():
 
     print("\n---------------------------------")
     print("|CADASTRO DE SENHA CRIPTOGRAFADO|")
@@ -13,13 +13,16 @@ def acessar_projeto():
     while True:
         print("----- Menu PROJETO -----")
         print("1 - Cadastrar")
-        print("2 - Sair")
+        print("2 - Alterar")
+        print("3 - Sair")
         escolha = input("\nEscolha uma das opções: ")
         print("-" * 24 + "\n")
         
         if escolha == "1":
             cadastrar_usuario()
         elif escolha == "2":
+            alterar_senha()
+        elif escolha == "3":
             print("VOCÊ NÃO ACESSOU. SAINDO -->\n")
             exit()
         else:
@@ -96,8 +99,46 @@ def gerar_hash(senhas_com_salt_hex):
     return sha256.hexdigest()
 
 def salvar_senha(nome, salt, hash_senha):
-    with open("senhas.txt", "a") as arquivo:
+    with open("config.sys", "a") as arquivo:
         arquivo.write(f"{nome}:{salt.hex()}:{hash_senha}\n")
     print("Senha armazenada com sucesso!\n")
 
-acessar_projeto()
+def alterar_senha():
+    if not os.path.exists("config.sys"):
+        print("Nenhum cadastro encontrado.")
+        return
+
+    nome_usuario = input("Digite o nome do usuário para alterar a senha: ").strip()
+
+    with open("config.sys", "r") as arquivo:
+        linhas = arquivo.readlines()
+    
+    usuario_encontrado = False
+    novas_linhas = []
+
+    for linha in linhas:
+        partes = linha.strip().split(":")
+        if partes[0] == nome_usuario:
+            nova_senha = input("Digite a nova senha: ").strip()
+            if not nova_senha:
+                print("Nenhuam senha informada. Voltando ao menu.")
+                return
+            
+            novo_salt = os.urandom(16).hex()
+            novo_hash = hashlib.sha256((nova_senha + novo_salt).encode()).hexdigest()
+
+            novas_linhas.append(f"{nome_usuario}:{novo_salt}:{novo_hash}\n")
+            usuario_encontrado = True
+        else:
+            novas_linhas.append(linha)
+
+    if not usuario_encontrado:
+        print("Usuário não encontrado.")
+        return
+        
+    with open("config.sys", "w") as arquivo:
+        arquivo.writelines(novas_linhas)
+
+    print("Senha alterada com sucesso.") 
+
+acessar_menu()
