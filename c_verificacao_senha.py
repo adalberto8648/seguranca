@@ -124,8 +124,16 @@ def alterar_senha():
                 print("Nenhuam senha informada. Voltando ao menu.")
                 return
             
+            print("----------------------------------")
+
+            print(f"Senha gerada: {nova_senha}")
+
+            novos_caracteres_disponiveis = string.ascii_letters + string.digits + string.punctuation
+            nova_senha_gerada = ''.join(random.choice(novos_caracteres_disponiveis) for numero in range(5))
+            print(f"Senha gerada: {nova_senha_gerada}")
+
             novo_salt = os.urandom(16).hex()
-            novo_hash = hashlib.sha256((nova_senha + novo_salt).encode()).hexdigest()
+            novo_hash = hashlib.sha256((nova_senha + nova_senha_gerada + novo_salt).encode()).hexdigest()
 
             novas_linhas.append(f"{nome_usuario}:{novo_salt}:{novo_hash}\n")
             usuario_encontrado = True
