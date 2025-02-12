@@ -43,12 +43,11 @@ def cadastrar_usuario():
     senha_random = ''.join(random.choice(caracteres) for numero in range(5))
     print(f"5 dígitos gerados por random: {senha_random}")
 
-    salt = os.urandom(16)
-    print(f"Salt gerado: {salt.hex()}")
-    senhas_com_salt = senha_usuario + senha_random + salt.hex()
-    hash_senha = gerar_hash(senhas_com_salt)
+    salt = os.urandom(16).hex()
+    print(f"Salt gerado: {salt}")
+    hash_senha = gerar_hash(senha_usuario + senha_random + salt)
 
-    print(f"Hash SHA-256 da senha: {gerar_hash(senhas_com_salt)}")
+    print(f"Hash SHA-256 da senha: {hash_senha}")
     print("----------------------------------\n")
 
     salvar_senha(nome, salt, hash_senha)
@@ -95,14 +94,14 @@ def validar_senha(senha):
         return False
     return True
 
-def gerar_hash(senhas_com_salt_hex):
+def gerar_hash(salt_cadastro_ou_alteracao):
     sha256 = hashlib.sha256()
-    sha256.update(senhas_com_salt_hex.encode('utf-8'))
+    sha256.update(salt_cadastro_ou_alteracao.encode('utf-8'))
     return sha256.hexdigest()
 
 def salvar_senha(nome, salt, hash_senha):
     with open("config.sys", "a") as arquivo:
-        arquivo.write(f"{nome}:{salt.hex()}:{hash_senha}\n")
+        arquivo.write(f"{nome}:{salt}:{hash_senha}\n")
     print("Senha armazenada com sucesso!\n")
 
 def alterar_senha():
@@ -125,22 +124,24 @@ def alterar_senha():
             
             print("----------------------------------")
 
-            print(f"Nova senha digitada: {nova_senha_usuario}")
+            print(f"Nova senha cadastrada pelo usuário: {nova_senha_usuario}")
 
             while not validar_senha(nova_senha_usuario):
                 print("Senha inválida. Tente novamente.")
                 nova_senha_usuario = senha_digitada()
 
-            novos_caracteres_disponiveis = string.ascii_letters + string.digits + string.punctuation
-            nova_senha_gerada = ''.join(random.choice(novos_caracteres_disponiveis) for numero in range(5))
-            print(f"Senha alterada: {nova_senha_gerada}")
+            novos_caracteres = string.ascii_letters + string.digits + string.punctuation
+            nova_senha_random = ''.join(random.choice(novos_caracteres) for numero in range(5))
+            print(f"5 novos dígitos gerados por random: {nova_senha_random}")
 
             novo_salt = os.urandom(16).hex()
-            novo_hash = hashlib.sha256((nova_senha_usuario + nova_senha_gerada + novo_salt).encode()).hexdigest()
+            print(f"Novo salt gerado: {novo_salt}")
+            novo_hash_senha = gerar_hash(nova_senha_usuario + nova_senha_random + novo_salt)
 
-            
+            print(f"Hash SHA-256 da nova senha: {novo_hash_senha}")
+            print("----------------------------------\n")
 
-            novas_linhas.append(f"{nome_usuario}:{novo_salt}:{novo_hash}\n")
+            novas_linhas.append(f"{nome_usuario}:{novo_salt}:{novo_hash_senha}\n")
             usuario_encontrado = True
         else:
             novas_linhas.append(linha)
