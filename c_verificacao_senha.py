@@ -39,8 +39,7 @@ def cadastrar_usuario():
     print("----------------------------------")
     print(f"Senha cadastrada pelo usuário: {senha_usuario}")
 
-    caracteres = string.ascii_letters + string.digits + string.punctuation
-    senha_random = ''.join(random.choice(caracteres) for numero in range(5))
+    senha_random = range_5_digitos()
     print(f"5 dígitos gerados por random: {senha_random}")
 
     salt = os.urandom(16).hex()
@@ -76,33 +75,38 @@ def senha_digitada():
         else:
             return senha_usuario
 
-def validar_senha(senha):
-    if len(senha) < 8:
+def validar_senha(senha_cadastra_ou_alterar):
+    if len(senha_cadastra_ou_alterar) < 8:
         print("A senha precisa ter pelo menos 8 caracteres.")
         return False
-    if not re.search(r"[A-Z]", senha):
+    if not re.search(r"[A-Z]", senha_cadastra_ou_alterar):
         print("A senha precisa ter pelo menos uma letra maiúscula.")
         return False
-    if not re.search(r"[a-z]", senha):
+    if not re.search(r"[a-z]", senha_cadastra_ou_alterar):
         print("A senha precisa ter pelo menos uma letra minúscula.")
         return False
-    if not re.search(r"\d", senha):
+    if not re.search(r"\d", senha_cadastra_ou_alterar):
         print("A senha precisa ter pelo menos um número.")
         return False
-    if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", senha):
+    if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", senha_cadastra_ou_alterar):
         print("A senha precisa ter pelo menos um caractere especial.")
         return False
     return True
 
-def gerar_hash(salt_cadastro_ou_alteracao):
+def gerar_hash(salt_cadastro_ou_alterar):
     sha256 = hashlib.sha256()
-    sha256.update(salt_cadastro_ou_alteracao.encode('utf-8'))
+    sha256.update(salt_cadastro_ou_alterar.encode('utf-8'))
     return sha256.hexdigest()
 
 def salvar_senha(nome, salt, hash_senha):
     with open("config.sys", "a") as arquivo:
         arquivo.write(f"{nome}:{salt}:{hash_senha}\n")
     print("Senha armazenada com sucesso!\n")
+
+def range_5_digitos():
+    novos_caracteres = string.ascii_letters + string.digits + string.punctuation
+    nova_senha_random = ''.join(random.choice(novos_caracteres) for numero in range(5))
+    return nova_senha_random
 
 def alterar_senha():
     if not os.path.exists("config.sys"):
@@ -130,8 +134,7 @@ def alterar_senha():
                 print("Senha inválida. Tente novamente.")
                 nova_senha_usuario = senha_digitada()
 
-            novos_caracteres = string.ascii_letters + string.digits + string.punctuation
-            nova_senha_random = ''.join(random.choice(novos_caracteres) for numero in range(5))
+            nova_senha_random = range_5_digitos()
             print(f"5 novos dígitos gerados por random: {nova_senha_random}")
 
             novo_salt = os.urandom(16).hex()
