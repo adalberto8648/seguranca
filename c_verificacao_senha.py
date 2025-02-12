@@ -72,53 +72,25 @@ def senha_digitada():
         if senha_usuario == "0":
             print("VOCÊ NÃO DIGITOU A SENHA. SAINDO -->")
             exit()
+        if not senha_usuario:
+            print("Nenhuma senha informada. Tente novamente.")
         else:
             return senha_usuario
 
-def validar_senha(senha_digitada):
-    if len(senha_digitada) < 8:
+def validar_senha(senha):
+    if len(senha) < 8:
         print("A senha precisa ter pelo menos 8 caracteres.")
         return False
-    if not re.search(r"[A-Z]", senha_digitada):
+    if not re.search(r"[A-Z]", senha):
         print("A senha precisa ter pelo menos uma letra maiúscula.")
         return False
-    if not re.search(r"[a-z]", senha_digitada):
+    if not re.search(r"[a-z]", senha):
         print("A senha precisa ter pelo menos uma letra minúscula.")
         return False
-    if not re.search(r"\d", senha_digitada):
+    if not re.search(r"\d", senha):
         print("A senha precisa ter pelo menos um número.")
         return False
-    if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", senha_digitada):
-        print("A senha precisa ter pelo menos um caractere especial.")
-        return False
-    return True
-
-def nova_senha_digitada():
-    while True:
-        nova_senha_usuario = input("Digite a nova senha ou 0 pra sair: ").strip()
-
-        if nova_senha_usuario == "0":
-            print("VOCÊ NÃO DIGITOU A SENHA. SAINDO -->")
-            exit()
-        if not nova_senha_usuario:
-            print("Nenhuma senha informada. Tente novamente.")
-        else:
-            return nova_senha_usuario
-
-def validar_nova_senha(nova_senha_digitada):
-    if len(nova_senha_digitada) < 8:
-        print("A senha precisa ter pelo menos 8 caracteres.")
-        return False
-    if not re.search(r"[A-Z]", nova_senha_digitada):
-        print("A senha precisa ter pelo menos uma letra maiúscula.")
-        return False
-    if not re.search(r"[a-z]", nova_senha_digitada):
-        print("A senha precisa ter pelo menos uma letra minúscula.")
-        return False
-    if not re.search(r"\d", nova_senha_digitada):
-        print("A senha precisa ter pelo menos um número.")
-        return False
-    if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", nova_senha_digitada):
+    if not re.search(r"[!@#$%^&*(),.?\":{}|<>]", senha):
         print("A senha precisa ter pelo menos um caractere especial.")
         return False
     return True
@@ -149,15 +121,15 @@ def alterar_senha():
     for linha in linhas:
         partes = linha.strip().split(":")
         if partes[0] == nome_usuario:
-            nova_senha_usuario = nova_senha_digitada()
+            nova_senha_usuario = senha_digitada()
             
             print("----------------------------------")
 
             print(f"Nova senha digitada: {nova_senha_usuario}")
 
-            while not validar_nova_senha(nova_senha_usuario):
+            while not validar_senha(nova_senha_usuario):
                 print("Senha inválida. Tente novamente.")
-                nova_senha_usuario = nova_senha_digitada()
+                nova_senha_usuario = senha_digitada()
 
             novos_caracteres_disponiveis = string.ascii_letters + string.digits + string.punctuation
             nova_senha_gerada = ''.join(random.choice(novos_caracteres_disponiveis) for numero in range(5))
@@ -165,6 +137,8 @@ def alterar_senha():
 
             novo_salt = os.urandom(16).hex()
             novo_hash = hashlib.sha256((nova_senha_usuario + nova_senha_gerada + novo_salt).encode()).hexdigest()
+
+            
 
             novas_linhas.append(f"{nome_usuario}:{novo_salt}:{novo_hash}\n")
             usuario_encontrado = True
